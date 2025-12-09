@@ -3,346 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Store Manager</title>
+    <title>Pro ERP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --ios-bg: #F2F2F7;
-            --ios-card: #FFFFFF;
-            --ios-blue: #007AFF;
-            --ios-green: #34C759;
-            --ios-red: #FF3B30;
-            --ios-gray: #E5E5EA;
-            --ios-text: #000000;
-            --ios-subtext: #8E8E93;
-        }
+        :root { --bg: #F2F2F7; --card: #FFF; --blue: #007AFF; --green: #34C759; --orange: #FF9500; --red: #FF3B30; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #000; padding: 15px; margin: 0; -webkit-tap-highlight-color: transparent; }
+        
+        /* MENU TABS */
+        .tabs { display: flex; background: rgba(118, 118, 128, 0.12); padding: 2px; border-radius: 10px; margin-bottom: 20px; overflow-x: auto;}
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; color: #000; min-width: 60px; }
+        .tab.active { background: #FFF; box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Premium Gradient Fon */
-            color: var(--ios-text);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: fade 0.3s; }
+        .card { background: var(--card); padding: 20px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
 
-        /* MENU (Segmented Control) */
-        .segmented-control {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px);
-            padding: 4px;
-            border-radius: 12px;
-            display: flex;
-            width: 100%;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        /* DASHBOARD CARDS */
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .dash-card { background: #FFF; padding: 15px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .dash-val { font-size: 18px; font-weight: 700; margin-top: 5px; }
+        .dash-lbl { font-size: 12px; color: #888; }
+        .green-txt { color: var(--green); } .red-txt { color: var(--red); } .blue-txt { color: var(--blue); }
 
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 8px;
-            color: #4a4a4a;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+        h3 { margin: 0 0 15px 0; font-size: 17px; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 12px; color: #8e8e93; font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #E5E5EA; background: #F9F9F9; font-size: 16px; box-sizing: border-box; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; color: #FFF; margin-top: 5px; cursor: pointer; }
+        .btn-add { background: var(--blue); } .btn-in { background: var(--green); } .btn-out { background: var(--red); } .btn-refresh { background: var(--orange); }
 
-        .tab.active {
-            background: #FFFFFF;
-            color: #000000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transform: scale(1.02);
-        }
-
-        /* KARTALAR */
-        .card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(15px);
-            width: 100%;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            animation: slideUp 0.4s ease-out;
-            display: none;
-        }
-
-        .card.active {
-            display: block;
-        }
-
-        h2 {
-            margin: 0 0 20px 0;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(45deg, #333, #000);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* INPUTLAR */
-        .input-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            padding-left: 4px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 16px;
-            background: #F2F4F8;
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-            box-sizing: border-box;
-            transition: all 0.2s;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        input:focus, select:focus, textarea:focus {
-            background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
-            outline: none;
-        }
-
-        /* TUGMALAR */
-        .btn {
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 18px;
-            font-size: 17px;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.1s, box-shadow 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-create {
-            background: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
-            box-shadow: 0 10px 20px rgba(255, 94, 98, 0.3);
-        }
-
-        .btn-in {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            box-shadow: 0 10px 20px rgba(86, 171, 47, 0.3);
-        }
-
-        .btn-out {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Select uchun strelka */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px top 50%;
-            background-size: 12px auto;
-        }
+        @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="segmented-control">
-        <div class="tab active" onclick="switchTab('create')">Katalog</div>
-        <div class="tab" onclick="switchTab('kirim')">Kirim</div>
-        <div class="tab" onclick="switchTab('sotuv')">Sotuv</div>
+    <div class="tabs">
+        <div class="tab active" onclick="sw('home')">🏠 Asosiy</div>
+        <div class="tab" onclick="sw('create')">➕ Yangi</div>
+        <div class="tab" onclick="sw('kirim')">📥 Kirim</div>
+        <div class="tab" onclick="sw('sotuv')">📤 Sotuv</div>
     </div>
 
-    <div id="create" class="card active">
-        <h2>✨ Yangi Tovar</h2>
-        
-        <div class="input-group">
-            <label>Nomi</label>
-            <input type="text" id="new_name" placeholder="Masalan: iPhone 15 Pro">
+    <div id="home" class="form-section active">
+        <div class="dash-grid">
+            <div class="dash-card">
+                <div class="dash-lbl">Bugungi Savdo</div>
+                <div class="dash-val blue-txt" id="d_sales">0 UZS</div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-lbl">Sof Foyda</div>
+                <div class="dash-val green-txt" id="d_profit">0 UZS</div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-lbl">Nasiyalar</div>
+                <div class="dash-val red-txt" id="d_debt">0 UZS</div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-lbl">Kassadagi Pul</div>
+                <div class="dash-val" id="d_cash">0 UZS</div>
+            </div>
         </div>
-
-        <div class="input-group">
-            <label>Brend</label>
-            <input type="text" id="new_brand" placeholder="Apple, Samsung, Nike...">
-        </div>
-
-        <div class="input-group">
-            <label>Kategoriya</label>
-            <select id="new_cat">
-                <option value="Texnika">📱 Texnika</option>
-                <option value="Kiyim">👕 Kiyim-kechak</option>
-                <option value="Oyoq kiyim">👟 Oyoq kiyim</option>
-                <option value="Parfyum">🧴 Parfyumeriya</option>
-                <option value="Boshqa">📦 Boshqa</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Davlat</label>
-            <input type="text" id="new_country" placeholder="Xitoy, Dubay, Turkiya...">
-        </div>
-
-        <button class="btn btn-create" onclick="sendData('create_product')">
-            Saqlash
-        </button>
+        <button class="btn btn-refresh" onclick="send('get_stats')">🔄 Yangilash</button>
     </div>
 
-    <div id="kirim" class="card">
-        <h2>📥 Omborga Kirim</h2>
-        
-        <div class="input-group">
-            <label>Tovar nomi</label>
-            <input type="text" id="in_name" placeholder="Nima keldi?">
+    <div id="create" class="form-section">
+        <div class="card">
+            <h3>✨ Tovar Pasporti</h3>
+            <div class="group"><label>Nomi</label><input type="text" id="new_name" placeholder="Masalan: iPhone 15"></div>
+            <div class="group"><label>Brend</label><input type="text" id="new_brand" placeholder="Apple..."></div>
+            <div class="group"><label>Kategoriya</label><input type="text" id="new_cat" placeholder="Texnika..."></div>
+            <div class="group"><label>O'lchov</label>
+                <select id="new_unit"><option>dona</option><option>kg</option><option>litr</option><option>metr</option></select>
+            </div>
+            <button class="btn btn-add" onclick="send('create')">Saqlash</button>
         </div>
-
-        <div class="input-group">
-            <label>Soni</label>
-            <input type="number" id="in_qty" inputmode="numeric" placeholder="Nechta?">
-        </div>
-
-        <div class="input-group">
-            <label>Kelish narxi (Dona)</label>
-            <input type="number" id="in_price" inputmode="numeric" placeholder="Summa...">
-        </div>
-
-        <div class="input-group">
-            <label>Qo'shimcha xarajat</label>
-            <input type="number" id="in_extra" inputmode="numeric" value="0">
-        </div>
-
-        <div class="input-group">
-            <label>Sana</label>
-            <input type="date" id="in_date">
-        </div>
-
-        <button class="btn btn-in" onclick="sendData('kirim')">
-            Qabul qilish
-        </button>
     </div>
 
-    <div id="sotuv" class="card">
-        <h2>💸 Sotuv qilish</h2>
-
-        <div class="input-group">
-            <label>Tovar nomi</label>
-            <input type="text" id="out_name" placeholder="Nima sotilmoqda?">
+    <div id="kirim" class="form-section">
+        <div class="card">
+            <h3>📥 Omborga Kirim</h3>
+            <div class="group"><label>Sklad/Do'kon</label>
+                <select id="in_loc"><option>Asosiy Sklad</option><option>Do'kon 1</option><option>Do'kon 2</option></select>
+            </div>
+            <div class="group"><label>Yetkazib beruvchi (Ta'minotchi)</label><input type="text" id="in_client" placeholder="Kimdan oldik?"></div>
+            <div class="group"><label>Tovar Nomi</label><input type="text" id="in_name" placeholder="Nima keldi?"></div>
+            <div class="group"><label>Soni</label><input type="number" id="in_qty" placeholder="0"></div>
+            <div class="group"><label>Kelish Narxi (Dona)</label><input type="number" id="in_price" placeholder="Summa"></div>
+            <button class="btn btn-in" onclick="send('kirim')">Qabul Qilish</button>
         </div>
+    </div>
 
-        <div class="input-group">
-            <label>Soni</label>
-            <input type="number" id="out_qty" inputmode="numeric" placeholder="Nechta?">
+    <div id="sotuv" class="form-section">
+        <div class="card">
+            <h3>💸 Sotuv / Kassa</h3>
+            <div class="group"><label>Qayerdan?</label>
+                <select id="out_loc"><option>Do'kon 1</option><option>Do'kon 2</option><option>Asosiy Sklad</option></select>
+            </div>
+            
+            <div class="group"><label>Mijoz (Ismi yoki Tel)</label>
+                <input type="text" id="out_client" placeholder="Noma'lum mijoz">
+            </div>
+
+            <div class="group"><label>Tovar Nomi</label><input type="text" id="out_name"></div>
+            <div class="group"><label>Soni</label><input type="number" id="out_qty"></div>
+            
+            <div class="group"><label>Sotish Narxi (JAMI)</label><input type="number" id="out_price" placeholder="Jami summa"></div>
+            
+            <div class="group"><label>Qancha to'ladi? (Nasiya uchun)</label>
+                <input type="number" id="out_paid" placeholder="Agar bo'sh qolsa, to'liq to'landi deb olinadi">
+            </div>
+
+            <div class="group"><label>Sana</label><input type="date" id="out_date"></div>
+
+            <button class="btn btn-out" onclick="send('sotuv')">Sotish</button>
         </div>
-
-        <div class="input-group">
-            <label>Sotuv narxi (Jami)</label>
-            <input type="number" id="out_price" inputmode="numeric" placeholder="Necha pulga?">
-        </div>
-
-        <div class="input-group">
-            <label>Izoh</label>
-            <textarea id="out_comment" rows="2" placeholder="Mijoz haqida..."></textarea>
-        </div>
-
-        <div class="input-group">
-            <label>Sana</label>
-            <input type="date" id="out_date">
-        </div>
-
-        <button class="btn btn-out" onclick="sendData('sotuv')">
-            Sotish
-        </button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Sanalar
-        document.getElementById('in_date').valueAsDate = new Date();
+        let tg = window.Telegram.WebApp; tg.expand();
+        tg.setHeaderColor('#F2F2F7'); tg.setBackgroundColor('#F2F2F7');
+        
         document.getElementById('out_date').valueAsDate = new Date();
 
-        // Tab Logic
-        function switchTab(tabName) {
-            document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
-            
-            // Haptic Feedback (Telefon titraydi)
-            tg.HapticFeedback.selectionChanged();
+        function sw(id) {
+            document.querySelectorAll('.form-section').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // Send Logic
-        function sendData(action) {
-            tg.HapticFeedback.impactOccurred('medium'); // Bosganda titrash
-            
-            let data = { action: action };
-            let isValid = true;
+        function send(act) {
+            tg.HapticFeedback.impactOccurred('medium');
+            let d = { a: act };
 
-            if (action === 'create_product') {
-                data.name = document.getElementById('new_name').value;
-                data.brand = document.getElementById('new_brand').value;
-                data.cat = document.getElementById('new_cat').value;
-                data.country = document.getElementById('new_country').value;
-                if(!data.name) isValid = false;
-            } 
-            else if (action === 'kirim') {
-                data.name = document.getElementById('in_name').value;
-                data.qty = document.getElementById('in_qty').value;
-                data.price = document.getElementById('in_price').value;
-                data.extra = document.getElementById('in_extra').value;
-                data.date = document.getElementById('in_date').value;
-                if(!data.name || !data.qty) isValid = false;
+            if(act === 'create') {
+                d.name = v('new_name'); d.brand = v('new_brand'); d.cat = v('new_cat'); d.unit = v('new_unit');
+                if(!d.name) return err();
             }
-            else if (action === 'sotuv') {
-                data.name = document.getElementById('out_name').value;
-                data.qty = document.getElementById('out_qty').value;
-                data.price = document.getElementById('out_price').value;
-                data.comment = document.getElementById('out_comment').value;
-                data.date = document.getElementById('out_date').value;
-                if(!data.name || !data.qty) isValid = false;
+            else if(act === 'kirim') {
+                d.loc = v('in_loc'); d.client = v('in_client'); d.name = v('in_name'); 
+                d.qty = v('in_qty'); d.price = v('in_price');
+                if(!d.name || !d.qty) return err();
+            }
+            else if(act === 'sotuv') {
+                d.loc = v('out_loc'); d.client = v('out_client'); d.name = v('out_name'); 
+                d.qty = v('out_qty'); d.price = v('out_price'); d.paid = v('out_paid'); d.date = v('out_date');
+                if(!d.name || !d.qty || !d.price) return err();
             }
 
-            if (isValid) {
-                tg.sendData(JSON.stringify(data));
-            } else {
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert("Ma'lumotlar to'liq emas!");
-            }
+            tg.sendData(JSON.stringify(d));
         }
+
+        function v(id) { return document.getElementById(id).value; }
+        function err() { tg.showAlert("Ma'lumotlarni to'ldiring!"); return false; }
     </script>
 </body>
 </html>
