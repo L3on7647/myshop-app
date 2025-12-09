@@ -2,242 +2,164 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modern Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP System</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --primary-color: #4A90E2;
-            --secondary-color: #F5F7FA;
-            --text-color: #2C3E50;
-            --card-bg: #ffffff;
-            --success: #2ECC71;
-            --danger: #E74C3C;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--tg-theme-secondary-bg-color, #F2F2F7);
-            color: var(--tg-theme-text-color, #000);
-            margin: 0;
-            padding: 20px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Header qismi */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 0;
-            background: linear-gradient(45deg, #3390ec, #007aff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-badge {
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        /* Statistika Grid (2 ta yonma-yon) */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            text-align: center;
-            transition: transform 0.2s;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--tg-theme-bg-color, #f5f5f5); color: var(--tg-theme-text-color, #000); padding: 15px; margin: 0; }
         
-        .stat-card:active {
-            transform: scale(0.95);
-        }
+        /* Tablar dizayni */
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: #fff; padding: 5px; border-radius: 12px; }
+        .tab-btn { padding: 10px 20px; border: none; background: none; font-weight: 600; color: #888; cursor: pointer; flex: 1; }
+        .tab-btn.active { color: #3390ec; border-bottom: 2px solid #3390ec; }
 
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 10px 0 5px 0;
-            color: var(--tg-theme-text-color, #000);
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, #8e8e93);
-        }
-
-        .icon-box {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        /* Asosiy amallar sarlavhasi */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            padding-left: 5px;
-        }
-
-        /* Katta tugmalar */
-        .action-card {
-            display: flex;
-            align-items: center;
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 15px 20px;
-            border-radius: 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .action-card:active {
-            transform: scale(0.98);
-            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        }
-
-        .action-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-right: 15px;
-        }
-
-        .green-bg { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
-        .blue-bg { background: rgba(52, 152, 219, 0.15); color: #3498db; }
-        .red-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
-
-        .action-info {
-            flex: 1;
-        }
-
-        .action-title {
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .action-desc {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, #8e8e93);
-        }
-
-        .arrow {
-            color: #ccc;
-            font-size: 20px;
-        }
-
+        /* Formalar */
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: #888; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background: #fff; }
+        
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; }
+        .btn-create { background-color: #f39c12; }
+        .btn-in { background-color: #27ae60; }
+        .btn-out { background-color: #c0392b; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Store Manager</h1>
-        <div class="user-badge">ID: <span id="user-id">...</span></div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('create')">➕ Yangi</button>
+        <button class="tab-btn" onclick="showTab('kirim')">📥 Kirim</button>
+        <button class="tab-btn" onclick="showTab('sotuv')">📤 Sotuv</button>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="icon-box">💰</div>
-            <div class="stat-value" id="daily-sales">0 so'm</div>
-            <div class="stat-label">Bugungi savdo</div>
+    <div id="create" class="form-section active">
+        <h3>Yangi tovar pasporti</h3>
+        <div class="input-group">
+            <label>Nomi (Masalan: Nike Air Force)</label>
+            <input type="text" id="new_name" placeholder="Tovar nomi">
         </div>
-        <div class="stat-card">
-            <div class="icon-box">📦</div>
-            <div class="stat-value" id="stock-count">124 ta</div>
-            <div class="stat-label">Ombordagi tovar</div>
+        <div class="input-group">
+            <label>Brend</label>
+            <input type="text" id="new_brand" placeholder="Nike, Adidas...">
         </div>
+        <div class="input-group">
+            <label>Kategoriya</label>
+            <select id="new_cat">
+                <option value="Oyoq kiyim">👟 Oyoq kiyim</option>
+                <option value="Kiyim">👕 Kiyim</option>
+                <option value="Atir">🧴 Parfyumeriya</option>
+                <option value="Texnika">📱 Texnika</option>
+                <option value="Boshqa">📦 Boshqa</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Ishlab chiqarilgan davlat</label>
+            <input type="text" id="new_country" placeholder="Xitoy, Turkiya...">
+        </div>
+        <button class="btn btn-create" onclick="sendData('create_product')">Bazaga qo'shish</button>
     </div>
 
-    <div class="section-title">Tezkor amallar</div>
-
-    <div class="action-card" onclick="scanBarcode('kirim')">
-        <div class="action-icon green-bg">📥</div>
-        <div class="action-info">
-            <div class="action-title">Kirim qilish</div>
-            <div class="action-desc">Tovarni qabul qilish (Prixod)</div>
+    <div id="kirim" class="form-section">
+        <h3>Omborga kirim</h3>
+        <div class="input-group">
+            <label>Tovar nomi</label>
+            <input type="text" id="in_name" placeholder="Qaysi tovar keldi?">
         </div>
-        <div class="arrow">›</div>
+        <div class="input-group">
+            <label>Soni (Nechta)</label>
+            <input type="number" id="in_qty" placeholder="0">
+        </div>
+        <div class="input-group">
+            <label>Kelish narxi (Dona uchun)</label>
+            <input type="number" id="in_price" placeholder="So'm yoki $">
+        </div>
+        <div class="input-group">
+            <label>Qo'shimcha xarajat (Yo'l kira/Bojxona - Jami)</label>
+            <input type="number" id="in_extra" value="0">
+        </div>
+        <div class="input-group">
+            <label>Sana</label>
+            <input type="date" id="in_date">
+        </div>
+        <button class="btn btn-in" onclick="sendData('kirim')">Qabul qilish</button>
     </div>
 
-    <div class="action-card" onclick="scanBarcode('sotuv')">
-        <div class="action-icon blue-bg">💸</div>
-        <div class="action-info">
-            <div class="action-title">Sotuv qilish</div>
-            <div class="action-desc">Mijozga tovar sotish</div>
+    <div id="sotuv" class="form-section">
+        <h3>Sotuvni rasmiylashtirish</h3>
+        <div class="input-group">
+            <label>Tovar nomi</label>
+            <input type="text" id="out_name" placeholder="Nima sotildi?">
         </div>
-        <div class="arrow">›</div>
-    </div>
-
-    <div class="action-card" onclick="alert('Tez orada...')">
-        <div class="action-icon red-bg">📊</div>
-        <div class="action-info">
-            <div class="action-title">Hisobotlar</div>
-            <div class="action-desc">Foyda va xarajatlar</div>
+        <div class="input-group">
+            <label>Soni</label>
+            <input type="number" id="out_qty" placeholder="1">
         </div>
-        <div class="arrow">›</div>
+        <div class="input-group">
+            <label>Sotuv narxi (Jami savdo)</label>
+            <input type="number" id="out_price" placeholder="Necha pulga sotildi?">
+        </div>
+        <div class="input-group">
+            <label>Izoh (Koment)</label>
+            <textarea id="out_comment" rows="2" placeholder="Mijoz haqida..."></textarea>
+        </div>
+        <div class="input-group">
+            <label>Sana</label>
+            <input type="date" id="out_date">
+        </div>
+        <button class="btn btn-out" onclick="sendData('sotuv')">Sotish</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand();
 
-        // Ranglarni telefonga moslash (Dark Mode uchun)
-        tg.setHeaderColor(tg.themeParams.secondary_bg_color || '#F2F2F7');
-        tg.setBackgroundColor(tg.themeParams.secondary_bg_color || '#F2F2F7');
+        // Sanani bugungi kunga qo'yish
+        document.getElementById('in_date').valueAsDate = new Date();
+        document.getElementById('out_date').valueAsDate = new Date();
 
-        // Foydalanuvchi ID sini ko'rsatish
-        if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
+        // Tablarni o'zgartirish funksiyasi
+        function showTab(tabName) {
+            document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
         }
 
-       function scanBarcode(type) {
-            tg.showScanQrPopup({
-                text: type === 'kirim' ? "Kirim uchun skanerlang" : "Sotish uchun skanerlang"
-            }, (code) => {
-                // Skaner qilinganda:
-                tg.closeScanQrPopup();
-                
-                // 1. Ma'lumotni tayyorlaymiz (JSON formatda)
-                const data = {
-                    action: type, // 'kirim' yoki 'sotuv'
-                    code: code    // shtrix kod raqami
-                };
+        // Ma'lumotni botga yuborish
+        function sendData(action) {
+            let data = { action: action };
 
-                // 2. Botga yuboramiz
-                // Bu funksiya Web Appni yopadi va botga xabar yuboradi
-                tg.sendData(JSON.stringify(data)); 
-                
-                return true;
-            });
+            if (action === 'create_product') {
+                data.name = document.getElementById('new_name').value;
+                data.brand = document.getElementById('new_brand').value;
+                data.cat = document.getElementById('new_cat').value;
+                data.country = document.getElementById('new_country').value;
+                if(!data.name) return alert("Nomini yozing!");
+            } 
+            else if (action === 'kirim') {
+                data.name = document.getElementById('in_name').value;
+                data.qty = document.getElementById('in_qty').value;
+                data.price = document.getElementById('in_price').value;
+                data.extra = document.getElementById('in_extra').value;
+                data.date = document.getElementById('in_date').value;
+                if(!data.name || !data.qty) return alert("Ma'lumotlar to'liq emas!");
+            }
+            else if (action === 'sotuv') {
+                data.name = document.getElementById('out_name').value;
+                data.qty = document.getElementById('out_qty').value;
+                data.price = document.getElementById('out_price').value;
+                data.comment = document.getElementById('out_comment').value;
+                data.date = document.getElementById('out_date').value;
+                if(!data.name || !data.qty) return alert("Ma'lumotlar to'liq emas!");
+            }
+
+            tg.sendData(JSON.stringify(data));
         }
     </script>
 </body>
-
 </html>
