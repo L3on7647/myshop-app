@@ -3,279 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ERP Tizimi</title>
+    <title>Store Manager</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* UMUMIY SOZLAMALAR */
+        :root {
+            --ios-bg: #F2F2F7;
+            --ios-card: #FFFFFF;
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+            --ios-gray: #E5E5EA;
+            --ios-text: #000000;
+            --ios-subtext: #8E8E93;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F5F7FA !important; /* Majburiy och rang */
-            color: #1a1a1a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Premium Gradient Fon */
+            color: var(--ios-text);
             margin: 0;
-            padding: 16px;
-            /* Telefonda bosganda ko'k ramka chiqmasligi uchun */
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* TABLAR (Menyu) */
-        .tabs-container {
-            background: #ffffff;
-            padding: 6px;
-            border-radius: 16px;
+        /* MENU (Segmented Control) */
+        .segmented-control {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 4px;
+            border-radius: 12px;
             display: flex;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            width: 100%;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .tab {
             flex: 1;
             text-align: center;
             padding: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            border-radius: 12px;
-            color: #8E8E93;
+            border-radius: 8px;
+            color: #4a4a4a;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .tab.active {
-            background-color: #EBEDF0;
-            color: #007AFF; /* Telegram ko'ki */
-            transform: scale(0.98);
+            background: #FFFFFF;
+            color: #000000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transform: scale(1.02);
         }
 
-        /* FORMALAR DIZAYNI */
-        .form-section {
-            display: none; /* Boshida hammasi yashirin */
-            animation: fadeIn 0.3s;
-        }
-        
-        .form-section.active {
-            display: block; /* Faqat tanlangani ko'rinadi */
-        }
-
+        /* KARTALAR */
         .card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            width: 100%;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slideUp 0.4s ease-out;
+            display: none;
         }
 
-        h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 18px;
+        .card.active {
+            display: block;
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            font-size: 22px;
             font-weight: 700;
-            color: #2C3E50;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #333, #000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* INPUTLAR (Yozish joylari) */
+        /* INPUTLAR */
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 13px;
             font-weight: 500;
-            color: #636e72;
+            color: #666;
+            padding-left: 4px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 14px;
-            border: 1px solid #E0E0E0;
-            border-radius: 12px;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background: #F2F4F8;
             font-size: 16px;
-            background: #FAFAFA;
-            box-sizing: border-box; /* O'lcham buzilmasligi uchun */
-            transition: border 0.2s;
-            outline: none;
-            color: #2d3436;
+            font-weight: 500;
+            color: #333;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
 
         input:focus, select:focus, textarea:focus {
-            border-color: #007AFF;
-            background: #fff;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+            outline: none;
         }
 
         /* TUGMALAR */
         .btn {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             border: none;
-            border-radius: 14px;
-            font-size: 16px;
+            border-radius: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: white;
             cursor: pointer;
             margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.1s;
+            transition: transform 0.1s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
 
-        /* Ranglar */
-        .btn-blue { background: linear-gradient(135deg, #4A90E2, #007AFF); }
-        .btn-green { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-create {
+            background: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
+            box-shadow: 0 10px 20px rgba(255, 94, 98, 0.3);
+        }
 
-        /* Animatsiya */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        .btn-in {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            box-shadow: 0 10px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn-out {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Select uchun strelka */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="tabs-container">
-        <div class="tab active" onclick="switchTab('create')">➕ Yangi</div>
-        <div class="tab" onclick="switchTab('kirim')">📥 Kirim</div>
-        <div class="tab" onclick="switchTab('sotuv')">📤 Sotuv</div>
+    <div class="segmented-control">
+        <div class="tab active" onclick="switchTab('create')">Katalog</div>
+        <div class="tab" onclick="switchTab('kirim')">Kirim</div>
+        <div class="tab" onclick="switchTab('sotuv')">Sotuv</div>
     </div>
 
-    <div id="create" class="form-section active">
-        <div class="card">
-            <h3>🔹 Katalogga qo'shish</h3>
-            
-            <div class="input-group">
-                <label>Tovar nomi</label>
-                <input type="text" id="new_name" placeholder="Masalan: iPhone 15 Pro">
-            </div>
-
-            <div class="input-group">
-                <label>Brend</label>
-                <input type="text" id="new_brand" placeholder="Apple, Nike, Samsung...">
-            </div>
-
-            <div class="input-group">
-                <label>Kategoriya</label>
-                <select id="new_cat">
-                    <option value="Texnika">📱 Telefon / Texnika</option>
-                    <option value="Kiyim">👕 Kiyim-kechak</option>
-                    <option value="Oyoq kiyim">👟 Oyoq kiyim</option>
-                    <option value="Atir">🧴 Parfyumeriya</option>
-                    <option value="Oziq-ovqat">🍎 Oziq-ovqat</option>
-                    <option value="Boshqa">📦 Boshqa</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Ishlab chiqarilgan davlat</label>
-                <input type="text" id="new_country" placeholder="Xitoy, Vetnam, Turkiya...">
-            </div>
-
-            <button class="btn btn-blue" onclick="sendData('create_product')">Saqlash</button>
+    <div id="create" class="card active">
+        <h2>✨ Yangi Tovar</h2>
+        
+        <div class="input-group">
+            <label>Nomi</label>
+            <input type="text" id="new_name" placeholder="Masalan: iPhone 15 Pro">
         </div>
+
+        <div class="input-group">
+            <label>Brend</label>
+            <input type="text" id="new_brand" placeholder="Apple, Samsung, Nike...">
+        </div>
+
+        <div class="input-group">
+            <label>Kategoriya</label>
+            <select id="new_cat">
+                <option value="Texnika">📱 Texnika</option>
+                <option value="Kiyim">👕 Kiyim-kechak</option>
+                <option value="Oyoq kiyim">👟 Oyoq kiyim</option>
+                <option value="Parfyum">🧴 Parfyumeriya</option>
+                <option value="Boshqa">📦 Boshqa</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Davlat</label>
+            <input type="text" id="new_country" placeholder="Xitoy, Dubay, Turkiya...">
+        </div>
+
+        <button class="btn btn-create" onclick="sendData('create_product')">
+            Saqlash
+        </button>
     </div>
 
-    <div id="kirim" class="form-section">
-        <div class="card">
-            <h3>📥 Omborga qabul qilish</h3>
-
-            <div class="input-group">
-                <label>Qaysi tovar keldi?</label>
-                <input type="text" id="in_name" placeholder="Nomini yozing...">
-            </div>
-
-            <div class="input-group">
-                <label>Nechta keldi?</label>
-                <input type="number" id="in_qty" inputmode="numeric" placeholder="Soni">
-            </div>
-
-            <div class="input-group">
-                <label>Kelish narxi (1 dona uchun)</label>
-                <input type="number" id="in_price" inputmode="numeric" placeholder="So'm yoki $">
-            </div>
-
-            <div class="input-group">
-                <label>Qo'shimcha xarajat (Yo'l kira, bojxona)</label>
-                <input type="number" id="in_extra" inputmode="numeric" value="0">
-            </div>
-
-            <div class="input-group">
-                <label>Sana</label>
-                <input type="date" id="in_date">
-            </div>
-
-            <button class="btn btn-green" onclick="sendData('kirim')">Qabul qilish</button>
+    <div id="kirim" class="card">
+        <h2>📥 Omborga Kirim</h2>
+        
+        <div class="input-group">
+            <label>Tovar nomi</label>
+            <input type="text" id="in_name" placeholder="Nima keldi?">
         </div>
+
+        <div class="input-group">
+            <label>Soni</label>
+            <input type="number" id="in_qty" inputmode="numeric" placeholder="Nechta?">
+        </div>
+
+        <div class="input-group">
+            <label>Kelish narxi (Dona)</label>
+            <input type="number" id="in_price" inputmode="numeric" placeholder="Summa...">
+        </div>
+
+        <div class="input-group">
+            <label>Qo'shimcha xarajat</label>
+            <input type="number" id="in_extra" inputmode="numeric" value="0">
+        </div>
+
+        <div class="input-group">
+            <label>Sana</label>
+            <input type="date" id="in_date">
+        </div>
+
+        <button class="btn btn-in" onclick="sendData('kirim')">
+            Qabul qilish
+        </button>
     </div>
 
-    <div id="sotuv" class="form-section">
-        <div class="card">
-            <h3>💸 Sotuvni rasmiylashtirish</h3>
+    <div id="sotuv" class="card">
+        <h2>💸 Sotuv qilish</h2>
 
-            <div class="input-group">
-                <label>Nima sotildi?</label>
-                <input type="text" id="out_name" placeholder="Tovar nomi...">
-            </div>
-
-            <div class="input-group">
-                <label>Nechta sotildi?</label>
-                <input type="number" id="out_qty" inputmode="numeric" placeholder="1">
-            </div>
-
-            <div class="input-group">
-                <label>Sotuv narxi (JAMI SUMMA)</label>
-                <input type="number" id="out_price" inputmode="numeric" placeholder="Necha pulga sotildi?">
-            </div>
-
-            <div class="input-group">
-                <label>Izoh (Mijoz ismi yoki telefon)</label>
-                <textarea id="out_comment" rows="2" placeholder="Izoh..."></textarea>
-            </div>
-
-            <div class="input-group">
-                <label>Sana</label>
-                <input type="date" id="out_date">
-            </div>
-
-            <button class="btn btn-red" onclick="sendData('sotuv')">Sotish</button>
+        <div class="input-group">
+            <label>Tovar nomi</label>
+            <input type="text" id="out_name" placeholder="Nima sotilmoqda?">
         </div>
+
+        <div class="input-group">
+            <label>Soni</label>
+            <input type="number" id="out_qty" inputmode="numeric" placeholder="Nechta?">
+        </div>
+
+        <div class="input-group">
+            <label>Sotuv narxi (Jami)</label>
+            <input type="number" id="out_price" inputmode="numeric" placeholder="Necha pulga?">
+        </div>
+
+        <div class="input-group">
+            <label>Izoh</label>
+            <textarea id="out_comment" rows="2" placeholder="Mijoz haqida..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label>Sana</label>
+            <input type="date" id="out_date">
+        </div>
+
+        <button class="btn btn-out" onclick="sendData('sotuv')">
+            Sotish
+        </button>
     </div>
 
     <script>
-        // Telegram Web Appni ishga tushirish
         let tg = window.Telegram.WebApp;
-        tg.expand(); // To'liq ekran qilish
-        
-        // Fon rangini majburan oq qilish (Telegram qora bo'lsa ham)
-        tg.setHeaderColor('#F5F7FA');
-        tg.setBackgroundColor('#F5F7FA');
+        tg.expand();
 
-        // Sanalarni bugungi kun bilan to'ldirish
+        // Sanalar
         document.getElementById('in_date').valueAsDate = new Date();
         document.getElementById('out_date').valueAsDate = new Date();
 
-        // Tablarni almashtirish funksiyasi
+        // Tab Logic
         function switchTab(tabName) {
-            // Hamma formalarni yashiramiz
-            document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
-            // Hamma tugmalardan 'active' klassini olib tashlaymiz
+            document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             
-            // Keraklisini yoqamiz
             document.getElementById(tabName).classList.add('active');
-            
-            // Tugmani bo'yaymiz (hozir bosilganini topib)
             event.currentTarget.classList.add('active');
+            
+            // Haptic Feedback (Telefon titraydi)
+            tg.HapticFeedback.selectionChanged();
         }
 
-        // Ma'lumotni Botga yuborish
+        // Send Logic
         function sendData(action) {
+            tg.HapticFeedback.impactOccurred('medium'); // Bosganda titrash
+            
             let data = { action: action };
             let isValid = true;
 
-            // 1. Agar YANGI tovar bo'lsa
             if (action === 'create_product') {
                 data.name = document.getElementById('new_name').value;
                 data.brand = document.getElementById('new_brand').value;
@@ -283,7 +319,6 @@
                 data.country = document.getElementById('new_country').value;
                 if(!data.name) isValid = false;
             } 
-            // 2. Agar KIRIM bo'lsa
             else if (action === 'kirim') {
                 data.name = document.getElementById('in_name').value;
                 data.qty = document.getElementById('in_qty').value;
@@ -292,7 +327,6 @@
                 data.date = document.getElementById('in_date').value;
                 if(!data.name || !data.qty) isValid = false;
             }
-            // 3. Agar SOTUV bo'lsa
             else if (action === 'sotuv') {
                 data.name = document.getElementById('out_name').value;
                 data.qty = document.getElementById('out_qty').value;
@@ -302,11 +336,11 @@
                 if(!data.name || !data.qty) isValid = false;
             }
 
-            // Agar hammasi to'g'ri bo'lsa, jo'natamiz
             if (isValid) {
                 tg.sendData(JSON.stringify(data));
             } else {
-                tg.showAlert("Iltimos, asosiy ma'lumotlarni to'ldiring!");
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert("Ma'lumotlar to'liq emas!");
             }
         }
     </script>
