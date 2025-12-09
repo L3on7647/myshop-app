@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Modern Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #F5F7FA;
+            --text-color: #2C3E50;
+            --card-bg: #ffffff;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--tg-theme-secondary-bg-color, #F2F2F7);
+            color: var(--tg-theme-text-color, #000);
+            margin: 0;
+            padding: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header qismi */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(45deg, #3390ec, #007aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-badge {
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Statistika Grid (2 ta yonma-yon) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:active {
+            transform: scale(0.95);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+            color: var(--tg-theme-text-color, #000);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #8e8e93);
+        }
+
+        .icon-box {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* Asosiy amallar sarlavhasi */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        /* Katta tugmalar */
+        .action-card {
+            display: flex;
+            align-items: center;
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 15px 20px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card:active {
+            transform: scale(0.98);
+            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .green-bg { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+        .blue-bg { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+        .red-bg { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+
+        .action-info {
+            flex: 1;
+        }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .action-desc {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #8e8e93);
+        }
+
+        .arrow {
+            color: #ccc;
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Store Manager</h1>
+        <div class="user-badge">ID: <span id="user-id">...</span></div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="icon-box">💰</div>
+            <div class="stat-value" id="daily-sales">0 so'm</div>
+            <div class="stat-label">Bugungi savdo</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-box">📦</div>
+            <div class="stat-value" id="stock-count">124 ta</div>
+            <div class="stat-label">Ombordagi tovar</div>
+        </div>
+    </div>
+
+    <div class="section-title">Tezkor amallar</div>
+
+    <div class="action-card" onclick="scanBarcode('kirim')">
+        <div class="action-icon green-bg">📥</div>
+        <div class="action-info">
+            <div class="action-title">Kirim qilish</div>
+            <div class="action-desc">Tovarni qabul qilish (Prixod)</div>
+        </div>
+        <div class="arrow">›</div>
+    </div>
+
+    <div class="action-card" onclick="scanBarcode('sotuv')">
+        <div class="action-icon blue-bg">💸</div>
+        <div class="action-info">
+            <div class="action-title">Sotuv qilish</div>
+            <div class="action-desc">Mijozga tovar sotish</div>
+        </div>
+        <div class="arrow">›</div>
+    </div>
+
+    <div class="action-card" onclick="alert('Tez orada...')">
+        <div class="action-icon red-bg">📊</div>
+        <div class="action-info">
+            <div class="action-title">Hisobotlar</div>
+            <div class="action-desc">Foyda va xarajatlar</div>
+        </div>
+        <div class="arrow">›</div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        // Ranglarni telefonga moslash (Dark Mode uchun)
+        tg.setHeaderColor(tg.themeParams.secondary_bg_color || '#F2F2F7');
+        tg.setBackgroundColor(tg.themeParams.secondary_bg_color || '#F2F2F7');
+
+        // Foydalanuvchi ID sini ko'rsatish
+        if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
+        }
+
+        function scanBarcode(type) {
+            tg.showScanQrPopup({
+                text: type === 'kirim' ? "Kirim uchun skanerlang" : "Sotish uchun skanerlang"
+            }, (code) => {
+                tg.closeScanQrPopup();
+                
+                // Animatsiya va xabar
+                tg.showConfirm(`Skanerlandi: ${code}\n\nAmal: ${type.toUpperCase()}\nDavom etaylikmi?`, (ok) => {
+                    if(ok) {
+                        tg.showAlert("Bajarildi! (Hozircha test rejim)");
+                    }
+                });
+                return true;
+            });
+        }
+    </script>
+</body>
+</html>
