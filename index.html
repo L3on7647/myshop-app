@@ -217,21 +217,27 @@
             document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
         }
 
-        function scanBarcode(type) {
+       function scanBarcode(type) {
             tg.showScanQrPopup({
                 text: type === 'kirim' ? "Kirim uchun skanerlang" : "Sotish uchun skanerlang"
             }, (code) => {
+                // Skaner qilinganda:
                 tg.closeScanQrPopup();
                 
-                // Animatsiya va xabar
-                tg.showConfirm(`Skanerlandi: ${code}\n\nAmal: ${type.toUpperCase()}\nDavom etaylikmi?`, (ok) => {
-                    if(ok) {
-                        tg.showAlert("Bajarildi! (Hozircha test rejim)");
-                    }
-                });
+                // 1. Ma'lumotni tayyorlaymiz (JSON formatda)
+                const data = {
+                    action: type, // 'kirim' yoki 'sotuv'
+                    code: code    // shtrix kod raqami
+                };
+
+                // 2. Botga yuboramiz
+                // Bu funksiya Web Appni yopadi va botga xabar yuboradi
+                tg.sendData(JSON.stringify(data)); 
+                
                 return true;
             });
         }
     </script>
 </body>
+
 </html>
