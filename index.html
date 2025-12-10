@@ -3,267 +3,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Savdo</title>
+    <title>Store Manager</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --bg: #F2F2F7; --card: #FFF; --blue: #007AFF; --green: #34C759; --red: #FF3B30; --text: #000; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 12px; margin: 0; }
-        
-        /* MENU */
-        .tabs { display: flex; background: #E5E5EA; padding: 3px; border-radius: 10px; margin-bottom: 15px; }
-        .tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; color: #8E8E93; }
-        .tab.active { background: #FFF; color: #000; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        :root {
+            --bg-color: #F2F2F7; /* Apple Light Gray */
+            --card-bg: #FFFFFF;
+            --primary: #007AFF;   /* Apple Blue */
+            --success: #34C759;   /* Apple Green */
+            --danger: #FF3B30;    /* Apple Red */
+            --text-main: #000000;
+            --text-sec: #8E8E93;
+            --input-bg: #F2F2F7;
+            --border-radius: 14px;
+        }
 
-        .section { display: none; animation: fade 0.2s; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            padding-bottom: 40px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* TAB MENU (IOS Segmented Control) */
+        .segmented-control {
+            background: rgba(118, 118, 128, 0.12);
+            padding: 3px;
+            border-radius: 10px;
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #FFFFFF;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+
+        /* SECTIONS */
+        .section {
+            display: none;
+            animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
         .section.active { display: block; }
 
-        /* KARTALAR */
-        .card { background: var(--card); padding: 16px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARD STYLE */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        h2 {
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* FORM ELEMENTS */
+        .input-group { margin-bottom: 16px; }
         
-        /* INPUTLAR */
-        .row { display: flex; gap: 10px; margin-bottom: 10px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            background: var(--input-bg);
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background: #E5E5EA; /* Darker gray on focus */
+        }
+
+        /* ROW LAYOUT */
+        .row { display: flex; gap: 12px; }
         .col { flex: 1; }
-        label { display: block; font-size: 11px; color: #8E8E93; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #E5E5EA; background: #F9F9F9; font-size: 16px; box-sizing: border-box; }
-        input:focus { border-color: var(--blue); background: #FFF; outline: none; }
 
-        /* SAVAT (LIST) */
-        .cart-list { margin-top: 10px; }
-        .cart-item { background: #FFF; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--blue); }
-        .cart-info { font-size: 14px; font-weight: 600; }
-        .cart-desc { font-size: 12px; color: #888; }
-        .del-btn { color: var(--red); font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px; }
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 17px;
+            font-weight: 600;
+            color: #FFF;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3); }
+        .btn-warning { background: #FF9F0A; color: #FFF; margin-bottom: 10px; } /* Add to Cart */
 
-        /* TUGMALAR */
-        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; color: #FFF; cursor: pointer; margin-top: 5px; }
-        .btn-add { background: #FF9500; margin-bottom: 10px; } /* Sariq - Savatga qo'shish */
-        .btn-submit { background: var(--green); } /* Yashil - Yakunlash */
-        .btn-blue { background: var(--blue); }
+        /* CART LIST */
+        .cart-container {
+            margin-top: 20px;
+        }
+        .cart-item {
+            background: #FFF;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+        .item-info { flex: 1; }
+        .item-title { font-weight: 600; font-size: 15px; }
+        .item-meta { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+        .item-delete {
+            color: var(--danger);
+            background: rgba(255, 59, 48, 0.1);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-        .total-bar { font-size: 18px; font-weight: 700; text-align: right; margin: 10px 0; color: var(--green); }
+        .total-box {
+            text-align: right;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 15px 0;
+            color: var(--text-main);
+        }
+        
+        /* Auto Calc Field Style */
+        .readonly-input {
+            background-color: #EFEFF4;
+            color: #666;
+            font-weight: bold;
+        }
 
-        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="tabs">
-        <div class="tab active" onclick="sw('create')">➕ Yangi</div>
-        <div class="tab" onclick="sw('kirim')">📥 Kirim</div>
-        <div class="tab" onclick="sw('sotuv')">📤 Sotuv</div>
+    <div class="segmented-control">
+        <div class="tab active" onclick="switchTab('create')">Katalog</div>
+        <div class="tab" onclick="switchTab('kirim')">Kirim</div>
+        <div class="tab" onclick="switchTab('sotuv')">Sotuv</div>
     </div>
 
     <div id="create" class="section active">
         <div class="card">
-            <h3>✨ Tovar Pasporti</h3>
-            <div class="row">
-                <div class="col"><label>Nomi</label><input type="text" id="c_name" placeholder="Masalan: Anor"></div>
+            <h2>✨ Yangi Tovar</h2>
+            <div class="input-group">
+                <label>Nomi</label>
+                <input type="text" id="c_name" placeholder="Masalan: Coca Cola 1L">
             </div>
-            <div class="row">
-                <div class="col"><label>Brend</label><input type="text" id="c_brand" placeholder="Brend..."></div>
-                <div class="col"><label>Davlat</label><input type="text" id="c_country" placeholder="O'zb..."></div>
-            </div>
-            <div class="row">
-                <div class="col"><label>Kategoriya</label><input type="text" id="c_cat" placeholder="Meva..."></div>
-                <div class="col"><label>O'lchov</label>
-                    <select id="c_unit"><option>kg</option><option>dona</option><option>quti</option><option>litr</option></select>
+            
+            <div class="row input-group">
+                <div class="col">
+                    <label>Brend</label>
+                    <input type="text" id="c_brand" placeholder="Brend...">
+                </div>
+                <div class="col">
+                    <label>Davlat</label>
+                    <input type="text" id="c_country" placeholder="O'zbekiston">
                 </div>
             </div>
-            <button class="btn btn-blue" onclick="sendCreate()">Bazaga Saqlash</button>
+
+            <div class="row input-group">
+                <div class="col">
+                    <label>Kategoriya</label>
+                    <select id="c_cat">
+                        <option>Oziq-ovqat</option>
+                        <option>Ichimliklar</option>
+                        <option>Kiyim-kechak</option>
+                        <option>Texnika</option>
+                        <option>Boshqa</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>O'lchov</label>
+                    <select id="c_unit">
+                        <option>dona</option>
+                        <option>kg</option>
+                        <option>litr</option>
+                        <option>metr</option>
+                        <option>quti</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="sendCreate()">Saqlash</button>
         </div>
     </div>
 
     <div id="kirim" class="section">
         <div class="card">
-            <h3>📥 Omborga Kirim</h3>
+            <h2>📥 Omborga Kirim</h2>
             
-            <div class="row">
-                <div class="col"><label>Sklad/Do'kon</label>
-                    <select id="k_loc"><option>Asosiy Sklad</option><option>Do'kon 1</option></select>
+            <div class="row input-group">
+                <div class="col">
+                    <label>Sklad</label>
+                    <select id="k_loc">
+                        <option>Asosiy Sklad</option>
+                        <option>Do'kon 1</option>
+                        <option>Do'kon 2</option>
+                    </select>
                 </div>
-                <div class="col"><label>Ta'minotchi (Ixtiyoriy)</label>
-                    <input type="text" id="k_supplier" placeholder="Kimdan?">
+                <div class="col">
+                    <label>Ta'minotchi</label>
+                    <input type="text" id="k_supplier" placeholder="(Ixtiyoriy)">
+                </div>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 20px 0;">
+
+            <div class="input-group">
+                <label>Tovar Nomi</label>
+                <input type="text" id="k_name" placeholder="Tovarni qidiring...">
+            </div>
+
+            <div class="row input-group">
+                <div class="col">
+                    <label>Soni</label>
+                    <input type="number" id="k_qty" inputmode="decimal" placeholder="0" oninput="calcPrice('kirim')">
+                </div>
+                <div class="col">
+                    <label>Jami Summa</label>
+                    <input type="number" id="k_total" inputmode="decimal" placeholder="0" oninput="calcPrice('kirim')">
                 </div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-
-            <div class="row">
-                <div class="col"><label>Tovar Nomi</label><input type="text" id="k_name" placeholder="Nima keldi?"></div>
-            </div>
-            <div class="row">
-                <div class="col"><label>Soni</label><input type="number" id="k_qty" oninput="calcKirim()" placeholder="Nechta?"></div>
-                <div class="col"><label>Jami Summa (Narx)</label><input type="number" id="k_total" oninput="calcKirim()" placeholder="Umumiy pul"></div>
-            </div>
-            <div class="row">
-                <div class="col"><label>Kelish Narxi (Dona)</label><input type="number" id="k_price" readonly style="background: #eee;"></div>
+            <div class="input-group">
+                <label>1 Dona Narxi (Avto-hisob)</label>
+                <input type="number" id="k_price" class="readonly-input" readonly>
             </div>
 
-            <button class="btn btn-add" onclick="addCart('kirim')">Savatga Qo'shish 🛒</button>
+            <button class="btn btn-warning" onclick="addToCart('kirim')">
+                <span>🛒 Savatga qo'shish</span>
+            </button>
         </div>
 
-        <div id="cart_kirim" class="cart-list"></div>
-        <div class="total-bar" id="total_kirim">Jami: 0 so'm</div>
-        <button class="btn btn-submit" onclick="submitAll('kirim')">✅ Qabul Qilish</button>
+        <div id="list_kirim" class="cart-container"></div>
+        <div class="total-box" id="sum_kirim" style="display:none;">Jami: 0 so'm</div>
+
+        <button id="btn_kirim_submit" class="btn btn-success" style="display:none;" onclick="submitData('kirim')">
+            Qabul Qilish ✅
+        </button>
     </div>
 
     <div id="sotuv" class="section">
         <div class="card">
-            <h3>💸 Savdo / Kassa</h3>
+            <h2>💸 Savdo / Kassa</h2>
             
-            <div class="row">
-                <div class="col"><label>Qayerdan?</label><select id="s_loc"><option>Do'kon 1</option><option>Do'kon 2</option></select></div>
-                <div class="col"><label>Mijoz (Ixtiyoriy)</label><input type="text" id="s_client" placeholder="Mijoz ismi"></div>
+            <div class="row input-group">
+                <div class="col">
+                    <label>Do'kon</label>
+                    <select id="s_loc">
+                        <option>Do'kon 1</option>
+                        <option>Do'kon 2</option>
+                        <option>Asosiy Sklad</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Mijoz</label>
+                    <input type="text" id="s_client" placeholder="Ismi...">
+                </div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 20px 0;">
 
-            <div class="row">
-                <div class="col"><label>Tovar Nomi</label><input type="text" id="s_name" placeholder="Tovarni tanlang"></div>
-            </div>
-            <div class="row">
-                <div class="col"><label>Soni</label><input type="number" id="s_qty" placeholder="1"></div>
-                <div class="col"><label>Sotuv Narxi (Dona)</label><input type="number" id="s_price" placeholder="Dona narxi"></div>
+            <div class="input-group">
+                <label>Tovar Nomi</label>
+                <input type="text" id="s_name" placeholder="Tovarni tanlang...">
             </div>
 
-            <button class="btn btn-add" onclick="addCart('sotuv')">Savatga Qo'shish 🛒</button>
+            <div class="row input-group">
+                <div class="col">
+                    <label>Soni</label>
+                    <input type="number" id="s_qty" inputmode="decimal" placeholder="1">
+                </div>
+                <div class="col">
+                    <label>Sotuv Narxi (Dona)</label>
+                    <input type="number" id="s_price" inputmode="decimal" placeholder="Summa">
+                </div>
+            </div>
+
+            <button class="btn btn-warning" onclick="addToCart('sotuv')">
+                <span>🛒 Savatga qo'shish</span>
+            </button>
         </div>
 
-        <div id="cart_sotuv" class="cart-list"></div>
+        <div id="list_sotuv" class="cart-container"></div>
         
-        <div class="card">
-            <div class="row">
-                <div class="col"><label>To'lov Turi</label>
-                    <select id="s_pay_type"><option>Naqd</option><option>Plastik (Karta)</option><option>Nasiya</option></select>
+        <div id="pay_details" class="card" style="display:none; margin-top: 20px;">
+            <h2>🧾 To'lov</h2>
+            <div class="row input-group">
+                <div class="col">
+                    <label>To'lov Turi</label>
+                    <select id="s_pay_type">
+                        <option>Naqd</option>
+                        <option>Plastik</option>
+                        <option>Nasiya</option>
+                    </select>
                 </div>
-                <div class="col"><label>To'langan Summa</label><input type="number" id="s_paid" placeholder="Qancha berdi?"></div>
+                <div class="col">
+                    <label>To'landi</label>
+                    <input type="number" id="s_paid" inputmode="decimal" placeholder="Summa">
+                </div>
             </div>
-            <div class="total-bar" id="total_sotuv">Jami: 0 so'm</div>
-            <button class="btn btn-submit" onclick="submitAll('sotuv')">✅ Sotish va Chek 🧾</button>
+            <div class="total-box" id="sum_sotuv">Jami: 0 so'm</div>
+            <button class="btn btn-success" onclick="submitData('sotuv')">Sotish ✅</button>
         </div>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp; tg.expand();
-        tg.setHeaderColor('#F2F2F7'); tg.setBackgroundColor('#F2F2F7');
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#F2F2F7');
+        tg.setBackgroundColor('#F2F2F7');
 
-        // SAVATLAR (Ikkita alohida savat: Kirim va Sotuv uchun)
+        // Savat massivlari
         let cartKirim = [];
         let cartSotuv = [];
 
-        function sw(id) {
-            document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+        function switchTab(id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(id).classList.add('active');
             event.target.classList.add('active');
+            tg.HapticFeedback.selectionChanged();
         }
 
-        // --- 1. AVTO HISOBLASH (Kirim uchun) ---
-        function calcKirim() {
-            let qty = parseFloat(document.getElementById('k_qty').value) || 0;
-            let total = parseFloat(document.getElementById('k_total').value) || 0;
-            if (qty > 0 && total > 0) {
-                document.getElementById('k_price').value = (total / qty).toFixed(2);
+        // --- AVTO HISOBLASH (Jami / Soni = Narx) ---
+        function calcPrice(type) {
+            if (type === 'kirim') {
+                let qty = parseFloat(document.getElementById('k_qty').value) || 0;
+                let total = parseFloat(document.getElementById('k_total').value) || 0;
+                if (qty > 0 && total > 0) {
+                    document.getElementById('k_price').value = (total / qty).toFixed(0);
+                }
             }
         }
 
-        // --- 2. SAVATGA QO'SHISH ---
-        function addCart(type) {
-            tg.HapticFeedback.impactOccurred('light');
+        // --- SAVATGA QO'SHISH ---
+        function addToCart(type) {
+            tg.HapticFeedback.impactOccurred('medium');
             
             if (type === 'kirim') {
                 let name = document.getElementById('k_name').value;
                 let qty = parseFloat(document.getElementById('k_qty').value);
                 let total = parseFloat(document.getElementById('k_total').value); // Jami summa
-                let price = parseFloat(document.getElementById('k_price').value); // Dona narxi
+                let price = parseFloat(document.getElementById('k_price').value); // Avto hisoblangan dona narx
 
-                if (!name || !qty || !total) return tg.showAlert("Ma'lumotlar to'liq emas!");
+                if (!name || !qty || !total) {
+                    return tg.showAlert("Ma'lumotlar to'liq emas!");
+                }
 
                 cartKirim.push({ name, qty, price, total });
                 renderCart('kirim');
-                // Tozalash
-                document.getElementById('k_name').value = "";
-                document.getElementById('k_qty').value = "";
-                document.getElementById('k_total').value = "";
-                document.getElementById('k_price').value = "";
-            } 
+                
+                // Inputlarni tozalash
+                document.getElementById('k_name').value = '';
+                document.getElementById('k_qty').value = '';
+                document.getElementById('k_total').value = '';
+                document.getElementById('k_price').value = '';
+                document.getElementById('k_name').focus(); // Kursorni qaytarish
+            }
             else if (type === 'sotuv') {
                 let name = document.getElementById('s_name').value;
                 let qty = parseFloat(document.getElementById('s_qty').value);
-                let price = parseFloat(document.getElementById('s_price').value); // Dona narxi
+                let price = parseFloat(document.getElementById('s_price').value); // Dona narx
 
-                if (!name || !qty || !price) return tg.showAlert("Ma'lumotlar to'liq emas!");
+                if (!name || !qty || !price) {
+                    return tg.showAlert("Ma'lumotlar to'liq emas!");
+                }
 
                 let total = qty * price;
                 cartSotuv.push({ name, qty, price, total });
                 renderCart('sotuv');
-                // Tozalash
-                document.getElementById('s_name').value = "";
-                document.getElementById('s_qty').value = "";
-                document.getElementById('s_price').value = "";
+
+                document.getElementById('s_name').value = '';
+                document.getElementById('s_qty').value = '';
+                // Narxni tozalamaymiz, balki keyingi tovar ham shu narxda bo'lishi mumkin
+                document.getElementById('s_name').focus();
             }
         }
 
-        // --- 3. SAVATNI CHIZISH ---
+        // --- SAVATNI CHIZISH ---
         function renderCart(type) {
             let list = (type === 'kirim') ? cartKirim : cartSotuv;
-            let container = document.getElementById(`cart_${type}`);
-            let totalEl = document.getElementById(`total_${type}`);
+            let container = document.getElementById(`list_${type}`);
+            let totalEl = document.getElementById(`sum_${type}`);
+            let submitBtn = (type === 'kirim') ? document.getElementById('btn_kirim_submit') : document.getElementById('pay_details');
             
             container.innerHTML = "";
             let grandTotal = 0;
+
+            if (list.length > 0) {
+                if(submitBtn) submitBtn.style.display = 'block';
+                if(totalEl) totalEl.style.display = 'block';
+            } else {
+                if(submitBtn) submitBtn.style.display = 'none';
+                if(totalEl) totalEl.style.display = 'none';
+            }
 
             list.forEach((item, index) => {
                 grandTotal += item.total;
                 let div = document.createElement('div');
                 div.className = 'cart-item';
                 div.innerHTML = `
-                    <div>
-                        <div class="cart-info">${item.name}</div>
-                        <div class="cart-desc">${item.qty} x ${item.price} = ${item.total}</div>
+                    <div class="item-info">
+                        <div class="item-title">${item.name}</div>
+                        <div class="item-meta">${item.qty} x ${item.price.toLocaleString()} = <b>${item.total.toLocaleString()}</b></div>
                     </div>
-                    <div class="del-btn" onclick="delItem('${type}', ${index})">✕</div>
+                    <div class="item-delete" onclick="delItem('${type}', ${index})">✕</div>
                 `;
                 container.appendChild(div);
             });
 
-            totalEl.innerText = `Jami: ${grandTotal} so'm`;
+            if(totalEl) totalEl.innerText = `Jami: ${grandTotal.toLocaleString()} so'm`;
         }
 
         function delItem(type, index) {
+            tg.HapticFeedback.impactOccurred('light');
             if (type === 'kirim') cartKirim.splice(index, 1);
             else cartSotuv.splice(index, 1);
             renderCart(type);
         }
 
-        // --- 4. YUBORISH (YAKUNLASH) ---
-        function submitAll(type) {
+        // --- YUBORISH (Botga) ---
+        function submitData(type) {
+            tg.HapticFeedback.notificationOccurred('success');
             let data = { action: type };
 
+            if (type === 'create') {
+                sendCreate();
+                return;
+            }
+
             if (type === 'kirim') {
-                if (cartKirim.length === 0) return tg.showAlert("Savat bo'sh!");
-                data.items = cartKirim;
                 data.loc = document.getElementById('k_loc').value;
                 data.supplier = document.getElementById('k_supplier').value;
-            } 
+                data.items = cartKirim;
+            }
             else if (type === 'sotuv') {
-                if (cartSotuv.length === 0) return tg.showAlert("Savat bo'sh!");
-                data.items = cartSotuv;
                 data.loc = document.getElementById('s_loc').value;
                 data.client = document.getElementById('s_client').value;
                 data.pay_type = document.getElementById('s_pay_type').value;
                 data.paid = document.getElementById('s_paid').value;
+                data.items = cartSotuv;
             }
 
             tg.sendData(JSON.stringify(data));
         }
 
-        // --- KATALOG UCHUN ---
         function sendCreate() {
             let name = document.getElementById('c_name').value;
-            if(!name) return tg.showAlert("Nomini yozing");
-            
+            if(!name) return tg.showAlert("Nomini yozing!");
+
             let data = {
                 action: 'create',
                 name: name,
@@ -274,7 +518,6 @@
             };
             tg.sendData(JSON.stringify(data));
         }
-
     </script>
 </body>
 </html>
