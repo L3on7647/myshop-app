@@ -30,7 +30,6 @@
         <div class="tab active" onclick="sw('create')">Katalog</div>
         <div class="tab" onclick="sw('kirim')">Kirim</div>
         <div class="tab" onclick="sw('sotuv')">Sotuv</div>
-        <div class="tab" onclick="sw('settings')">Sozlama</div>
     </div>
 
     <div id="create" class="section active">
@@ -48,8 +47,21 @@
     <div id="kirim" class="section">
         <div class="card">
             <h2>📥 Kirim</h2>
-            <input type="text" id="k_loc" list="locs" placeholder="Sklad nomini yozing...">
-            <input type="text" id="k_supplier" placeholder="Ta'minotchi">
+            <label style="font-size:12px;color:#666;">Qaysi joyga?</label>
+            
+            <select id="k_loc">
+                <option value="Sklad 1">🏭 Sklad 1</option>
+                <option value="Sklad 2">🏭 Sklad 2</option>
+                <option value="Sklad 3">🏭 Sklad 3</option>
+                <option value="Do'kon 1">🏪 Do'kon 1</option>
+                <option value="Do'kon 2">🏪 Do'kon 2</option>
+                <option value="Do'kon 3">🏪 Do'kon 3</option>
+                <option value="Online 1">🌐 Online 1</option>
+                <option value="Online 2">🌐 Online 2</option>
+                <option value="Online 3">🌐 Online 3</option>
+            </select>
+            
+            <input type="text" id="k_supplier" placeholder="Ta'minotchi (Ixtiyoriy)">
             <hr>
             <input type="text" id="k_name" list="prod_list" placeholder="Tovar nomi (Qidirish...)">
             <input type="number" id="k_qty" placeholder="Soni" oninput="calc('k')">
@@ -64,8 +76,21 @@
     <div id="sotuv" class="section">
         <div class="card">
             <h2>💸 Sotuv</h2>
-            <input type="text" id="s_loc" list="locs" placeholder="Do'kon nomini yozing...">
-            <input type="text" id="s_client" placeholder="Mijoz ismi">
+            <label style="font-size:12px;color:#666;">Qayerdan sotiladi?</label>
+            
+            <select id="s_loc">
+                <option value="Do'kon 1">🏪 Do'kon 1</option>
+                <option value="Do'kon 2">🏪 Do'kon 2</option>
+                <option value="Do'kon 3">🏪 Do'kon 3</option>
+                <option value="Online 1">🌐 Online 1</option>
+                <option value="Online 2">🌐 Online 2</option>
+                <option value="Online 3">🌐 Online 3</option>
+                <option value="Sklad 1">🏭 Sklad 1</option>
+                <option value="Sklad 2">🏭 Sklad 2</option>
+                <option value="Sklad 3">🏭 Sklad 3</option>
+            </select>
+            
+            <input type="text" id="s_client" placeholder="Mijoz ismi (Ixtiyoriy)">
             <hr>
             <input type="text" id="s_name" list="prod_list" placeholder="Tovar nomi (Qidirish...)">
             <input type="number" id="s_qty" placeholder="Soni">
@@ -76,28 +101,12 @@
         <div class="card">
             <label>To'lov turi</label>
             <select id="s_pay"><option>Naqd</option><option>Plastik</option><option>Nasiya</option></select>
-            <input type="number" id="s_paid" placeholder="To'landi (Agar nasiya bo'lsa kam yozing)">
+            <input type="number" id="s_paid" placeholder="To'landi (Bo'sh qolsa to'liq)">
             <button class="btn btn-green" onclick="submit('sotuv')">Sotish va Chek</button>
         </div>
     </div>
 
-    <div id="settings" class="section">
-        <div class="card">
-            <h2>⚙️ Joylar (Sklad/Do'kon)</h2>
-            <p style="color:#666; font-size:12px;">Yangi do'kon yoki sklad nomini yozib qo'shing.</p>
-            <input type="text" id="new_loc_name" placeholder="Masalan: Sergeli Sklad">
-            <button class="btn btn-blue" onclick="addLoc()">Joyni yaratish</button>
-        </div>
-    </div>
-
-    <datalist id="locs">
-        <option value="Asosiy Sklad">
-        <option value="Do'kon 1">
-        <option value="Do'kon 2">
-    </datalist>
-    
-    <datalist id="prod_list">
-        </datalist>
+    <datalist id="prod_list"></datalist>
 
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
@@ -136,12 +145,6 @@
             el.innerHTML = list.map(i => `<div class="cart-item"><b>${i.name}</b> <span>${i.qty} x ${i.price}</span></div>`).join('');
         }
 
-        function addLoc() {
-            let n = document.getElementById('new_loc_name').value;
-            if(!n) return;
-            tg.sendData(JSON.stringify({action:'add_loc', name:n}));
-        }
-
         function sendCreate() {
             let d = {
                 action:'create', name:document.getElementById('c_name').value,
@@ -165,7 +168,6 @@
                 d.paid = document.getElementById('s_paid').value;
                 if(cartS.length==0) return tg.showAlert("Savat bo'sh");
             }
-            if(!d.loc) return tg.showAlert("Joy nomini yozing!");
             tg.sendData(JSON.stringify(d));
         }
     </script>
